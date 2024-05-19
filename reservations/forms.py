@@ -9,3 +9,4 @@ class ConfirmReservationForm(forms.Form):
 
 class ListViewFilterForm(forms.Form):
     seats = forms.IntegerField(min_value=1, required=False)
+    cargo = forms.ChoiceField(choices=[("None", "------"),(True, "TRUE"), (False, "FALSE"),], required=False)
