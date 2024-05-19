@@ -23,7 +23,7 @@
         <td>{{ object.cup_holder }}</td>
         <td>{{ object.kajak_type }}</td>
         <td>{{ object.price_per_hour }}</td>
-        <td><a href="{% url 'kajak-detail' object.id %}"><button>Detail</button></a></td>
+        <td><a href="{% url 'kajak-detail' object.id start_date end_date %}"><button>Detail</button></a></td>
     </tr>
 
     

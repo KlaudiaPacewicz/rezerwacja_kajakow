@@ -21,6 +21,6 @@ from reservations.views import KajakListView, KajakDetailView, confirm_reservati
 
 urlpatterns = [
     path("kajaki/", KajakListView.as_view(), name="kajaki-list"), # 127.0.0.1:8000/kajaki/
-    path("kajaki/<int:pk>/", KajakDetailView.as_view(), name="kajak-detail"), # 127.0.0.1:8000/kajaki/[id_kajaku]/
+    path("kajaki/<int:pk>/<str:start_date>/<str:end_date>", KajakDetailView.as_view(), name="kajak-detail"), # 127.0.0.1:8000/kajaki/[id_kajaku]/
     path("kajaki/<int:kajak_id>/confirm_reservation/", confirm_reservation, name="kajak-confirm-reservation") # 127.0.0.1:8000/kajaki/[id_kajaku]/
 ]

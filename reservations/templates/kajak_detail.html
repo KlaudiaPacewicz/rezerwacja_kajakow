@@ -16,7 +16,11 @@
     <li>{{ object.cargo }}</li> 
     <li>{{ object.cup_holder }}</li> 
     <li>{{ object.kajak_type }}</li> 
+
+    <li>{{ start_date }}</li>
+    <li>{{ end_date }}</li>
     <li>{{ object.price_per_hour }} PLN</li> 
+
 </ul>
 <button><a href="{% url 'kajak-confirm-reservation' object.id %}">Reserve</a></button>
 

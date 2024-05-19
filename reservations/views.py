@@ -52,7 +52,8 @@ class KajakListView(ListView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         data = super().get_context_data(**kwargs)
         data["form"] = ListViewFilterForm()
-        print(data)
+        data["start_date"] = "bla"
+        data["end_date"] = "blabla"
         return data
     
     def post(self, request, *args, **kwargs):
@@ -89,13 +90,27 @@ class KajakListView(ListView):
             qs = filter_choice_field(qs, field="color", field_value=color)
             qs = filter_choice_field(qs, field="kajak_type", field_value=kajak_type)
 
-        context = {self.context_object_name: set(qs), 'form': filter_form }
+        context = {self.context_object_name: set(qs), 'form': filter_form, 'start_date': start_date, 'end_date': end_date}
         return render(request, self.template_name, context)
 
 
 class KajakDetailView(DetailView):
     model = Kajak
     template_name = "kajak_detail.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        print(self.kwargs)
+        data = super().get_context_data(**kwargs)
+        data.update(self.kwargs)
+
+        # start_date_obj = timezone.datetime.strptime(data["start_date"], "YYYY-mm-dd HH:MM:SSz") #TODO find proper formatting of the date
+        # end_date_obj = timezone.datetime.strptime(data["end_date"], "Y-m-d H:M:Sz") #TODO find proper formatting of the date
+
+        # time_delta  = end_date_obj - start_date_obj
+        # hours_to_pay = ceil(time_delta.seconds/3600.0) + time_delta.days*24
+        # price_to_pay = hours_to_pay*data["objects"].price_per_hour
+        # data["price_to_pay"] = price_to_pay
+        return data
 
 # w method view request jest przekazwywany jako argument
 def confirm_reservation(request, kajak_id):
