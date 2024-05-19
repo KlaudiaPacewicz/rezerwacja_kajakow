@@ -71,11 +71,13 @@ class KajakListView(ListView):
             end_date = filter_form.cleaned_data["end_date"]
             if start_date > end_date:
                 start_date, end_date = end_date, start_date
+            print(start_date, end_date)
 
             # filter main kajak queryset by number of seats
             earlier_than = Q(reservations__start_date__gte=end_date) # gte -> greater than or equal
             later_than = Q(reservations__end_date__lte=start_date) # lte -> less than or equal
-            reservation_dates = earlier_than | later_than
+            reservation_dates = earlier_than | later_than | Q(reservations__isnull=True)
+
 
             qs = qs.filter(reservation_dates)
 
