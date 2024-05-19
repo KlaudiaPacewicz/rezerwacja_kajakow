@@ -56,6 +56,23 @@ class Rezerwacja(models.Model):
         super(Rezerwacja, self).save(*args, **kwargs)
 
 
+# #select_related
+# {"date_created": jakas data, "klient": {"id": 1, "mail": jakis mail...}, "kajak": 1, "price":12.42}
 
 
+# #prefetch_related
 
+# n+1 problem
+
+
+# uczniowie = Uczen.objects.all() # +1 zapytan
+
+# for uczen in uczniowie: # n zapytan
+#     print(uczen)
+#     print(uczen.szkola.name) # <- zapytanie do bazy danych
+
+# uczniowie = Uczen.objects.all().select_related("szkola") # 1 zapytanie
+
+# for uczen in uczniowie: 
+#     print(uczen)
+#     print(uczen.szkola.name) # <- juz zostaloa zrobione w select_related

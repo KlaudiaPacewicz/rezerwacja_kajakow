@@ -4,6 +4,11 @@ from django.views.generic import ListView, DetailView
 
 from reservations.forms import ConfirmReservationForm, ListViewFilterForm
 from reservations.models import Kajak, Klient, Rezerwacja
+from rest_framework import viewsets
+from rest_framework.response import Response
+from django.db.models import Count
+
+from reservations.serializers import StatisticsSerializer
 
 # Create your views here.
 
@@ -72,8 +77,6 @@ class KajakListView(ListView):
         return render(request, self.template_name, context)
 
 
-
-
 class KajakDetailView(DetailView):
     model = Kajak
     template_name = "kajak_detail.html"
@@ -103,4 +106,15 @@ def confirm_reservation(request, kajak_id):
         form = ConfirmReservationForm()
 
     return render(request, "confirm_reservation.html", {"form": form, "kajak_id": kajak_id, "message": message})
-    
+
+
+class StatisticsViewSet(viewsets.ViewSet):
+    def get_queryset(self):
+        return Kajak.objects.all()
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        queryset = queryset.prefetch_related("reservations").annotate(num_of_reservations=Count("reservations"))
+        
+        serializer = StatisticsSerializer(queryset, many=True)
+        return Response(serializer.data)
