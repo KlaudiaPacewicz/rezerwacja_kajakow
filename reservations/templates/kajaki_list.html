@@ -1,0 +1,26 @@
+<table>
+    <tr>
+        <th>Seats</th>
+        <th>Color</th>
+        <th>Cargo</th>
+        <th>Cup holder</th>
+        <th>Kajak Type</th>
+        <th>Price per Hour</th>
+    </tr>
+   
+    {% for object in object_list %} 
+    <tr>
+        
+        <!-- Display Objects -->
+        <td>{{ object.seats }}</td>
+        <td>{{ object.color }}</td>
+        <td>{{ object.cargo }}</td>
+        <td>{{ object.cup_holder }}</td>
+        <td>{{ object.kajak_type }}</td>
+        <td>{{ object.price_per_hour }}</td>
+        <td><a href="{% url 'kajak-detail' object.id %}"><button>Detail</button></a></td>
+    </tr>
+
+    
+    {% endfor %}
+</table>

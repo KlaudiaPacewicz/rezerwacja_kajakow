@@ -1,0 +1,22 @@
+<!-- przycisk do przejscia na strone glowna -->
+<button>
+    <!-- stworzenie przejscia na endpoint o nazwa questions -->
+    <a href="{% url 'kajaki-list' %}">Back</a>
+</button>
+<!-- najwiekszy mozliwy naglowek o tresci QuestionDetail -->
+<h1>Kajak Detail</h1>
+<!-- django wstrzykuje do tej templatki obiekt "object" ktory jest pytaniem z bazy -->
+<ul> 
+    <li>{{ object.id }}</li> 
+    <!-- wyswietl question_text pytania -->
+    <li>{{ object.seats }}</li> 
+    <!-- wyswietl pub_date pytania -->
+    <li>{{ object.color }}</li> 
+    <!-- wyswietl was_published_recently pytania -->
+    <li>{{ object.cargo }}</li> 
+    <li>{{ object.cup_holder }}</li> 
+    <li>{{ object.kajak_type }}</li> 
+    <li>{{ object.price_per_hour }} PLN</li> 
+</ul>
+<button><a href="{% url 'kajak-confirm-reservation' object.id %}">Reserve</a></button>
+
