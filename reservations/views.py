@@ -6,7 +6,9 @@ from reservations.forms import ConfirmReservationForm, ListViewFilterForm
 from reservations.models import Kajak, Klient, Rezerwacja
 from rest_framework import viewsets
 from rest_framework.response import Response
-from django.db.models import Count
+from django.db.models import Count, Q
+from django.utils import timezone
+
 
 from reservations.serializers import StatisticsSerializer
 
@@ -44,7 +46,7 @@ class KajakListView(ListView):
         # qs ktory wyswietli kajaki ktore zarezerwowal klient o id 1
         # qs = Kajak.objects.filter(reservations__klient_id=1)
         # wyswietl kajaki ktore nie maja rezerwacji
-        qs = Kajak.objects.filter(reservations=None)
+        qs = Kajak.objects.prefetch_related("reservations").all()
         return qs
     
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -64,7 +66,19 @@ class KajakListView(ListView):
             color = filter_form.cleaned_data["color"]
             kajak_type = filter_form.cleaned_data["kajak_type"]
             price_per_hour = filter_form.cleaned_data["price_per_hour"]
+
+            start_date = filter_form.cleaned_data["start_date"]
+            end_date = filter_form.cleaned_data["end_date"]
+            if start_date > end_date:
+                start_date, end_date = end_date, start_date
+
             # filter main kajak queryset by number of seats
+            earlier_than = Q(reservations__start_date__gte=end_date) # gte -> greater than or equal
+            later_than = Q(reservations__end_date__lte=start_date) # lte -> less than or equal
+            reservation_dates = earlier_than | later_than
+
+            qs = qs.filter(reservation_dates)
+
             qs = filter_non_required_field(qs, field="seats", field_value=number_of_seats)
             qs = filter_non_required_field(qs, field="price_per_hour", field_value=price_per_hour)
             
@@ -73,7 +87,7 @@ class KajakListView(ListView):
             qs = filter_choice_field(qs, field="color", field_value=color)
             qs = filter_choice_field(qs, field="kajak_type", field_value=kajak_type)
 
-        context = {self.context_object_name: qs, 'form': filter_form }
+        context = {self.context_object_name: set(qs), 'form': filter_form }
         return render(request, self.template_name, context)
 
 

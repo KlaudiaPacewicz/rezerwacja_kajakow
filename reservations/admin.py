@@ -15,7 +15,7 @@ class KlientAdmin(admin.ModelAdmin):
 
 class RezerwacjaAdmin(admin.ModelAdmin):
     field = ["id", "date_created", "klient", "kajak", "price", "start_date", "end_date"]
-    list_display = ["id", "date_created", "klient", "kajak", "price"]
+    list_display = ["id", "date_created", "klient", "kajak", "price", "start_date", "end_date"]
     readonly_fields = ["id", "price", "date_created"]
 
 
