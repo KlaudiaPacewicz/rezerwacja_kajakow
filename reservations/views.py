@@ -22,21 +22,25 @@ class KajakListView(ListView):
         qs = Kajak.objects.filter(reservations=None)
         return qs
     
-    def post(self, request, *args, **kwargs):
-        qs = self.get_queryset()
-        filter_form = ListViewFilterForm(self.request.POST)
-        if filter_form.is_valid():
-            # filtering logic
-            seats = filter_form.cleaned_data["seats"]
-            # filter main kajak queryset by number of seats
-            qs = qs.filter(seats=seats)
-        context = {self.context_object_name: qs, 'form': filter_form }
-        return render(request, self.template_name, context)
-
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         data = super().get_context_data(**kwargs)
         data["form"] = ListViewFilterForm()
         return data
+    
+    def post(self, request, *args, **kwargs):
+        qs = self.get_queryset() # wez szeroki widok kajakow
+        print(qs)
+        filter_form = ListViewFilterForm(self.request.POST) # zaladuj dane do formularza
+        if filter_form.is_valid(): # sprawdz czy formularz jest dobrze uzupelniony
+            # filtering logic
+            number_of_seats = filter_form.cleaned_data["seats"] # wybierz z formularza ilosc miejsc ktore ma miec kajak
+            # filter main kajak queryset by number of seats
+            if number_of_seats is not None: # jesli liczba miejsc zostala podana
+                qs = qs.filter(seats=number_of_seats) # wez kajaki ktore pole seats jest rowne podanej liczbie miejsc
+            print(qs)
+        context = {self.context_object_name: qs, 'form': filter_form }
+        return render(request, self.template_name, context)
+
 
 
 class KajakDetailView(DetailView):

@@ -8,4 +8,4 @@ class ConfirmReservationForm(forms.Form):
     
 
 class ListViewFilterForm(forms.Form):
-    seats = forms.IntegerField(min_value=1)
+    seats = forms.IntegerField(min_value=1, required=False)
