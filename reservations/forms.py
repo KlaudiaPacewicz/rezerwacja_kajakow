@@ -15,6 +15,8 @@ class ConfirmReservationForm(forms.Form):
     
 
 class ListViewFilterForm(forms.Form):
+    start_date = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    end_date = forms.DateTimeField(required=True, widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
     seats = forms.IntegerField(min_value=1, required=False)
     cargo = forms.ChoiceField(choices=[("None", "------"),(True, "TRUE"), (False, "FALSE"),], required=False)
     cup_holder = forms.ChoiceField(choices=[("None", "------"),(True, "TRUE"), (False, "FALSE"),], required=False)
