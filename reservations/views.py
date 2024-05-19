@@ -8,6 +8,26 @@ from reservations.models import Kajak, Klient, Rezerwacja
 # Create your views here.
 
 # w class view request jest w  "self.request"
+def filter_choice_field(qs, field, field_value):
+    # if cargo != "None": # jesli opcja cargo zostala podana
+    #     qs = qs.filter(cargo=cargo) # wybierz kajaki ktore sa cargo
+    # if cup_holder != "None": # jesli opcja cargo zostala podana
+    #     qs = qs.filter(cup_holder=cup_holder) # wybierz kajaki ktore sa cargo
+    # if color != "None": # jesli opcja cargo zostala podana
+    #     qs = qs.filter(color=color) # wybierz kajaki ktore sa cargo
+    if field_value != "None": # jesli opcja cargo zostala podana
+        qs = qs.filter(**{field: field_value}) # stworzenie key value arguements from dict
+    return qs
+
+def filter_non_required_field(qs, field, field_value):
+    # if number_of_seats is not None: # jesli liczba miejsc zostala podana
+    #     qs = qs.filter(seats=number_of_seats) # wez kajaki ktore pole seats jest rowne podanej liczbie miejsc
+    # if price_per_hour is not None: # jesli liczba miejsc zostala podana
+    #     qs = qs.filter(price_per_hour=price_per_hour) # wez kajaki ktore pole seats jest rowne podanej liczbie miejsc
+    if field_value is not None:
+        qs = qs.filter(**{field: field_value})
+    return qs
+
 class KajakListView(ListView):
     model = Kajak
     template_name = "kajaki_list.html"
@@ -25,6 +45,7 @@ class KajakListView(ListView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         data = super().get_context_data(**kwargs)
         data["form"] = ListViewFilterForm()
+        print(data)
         return data
     
     def post(self, request, *args, **kwargs):
@@ -34,13 +55,22 @@ class KajakListView(ListView):
             # filtering logic
             number_of_seats = filter_form.cleaned_data["seats"] # wybierz z formularza ilosc miejsc ktore ma miec kajak
             cargo = filter_form.cleaned_data["cargo"] # wybierz z formularza ilosc miejsc ktore ma miec kajak
+            cup_holder = filter_form.cleaned_data["cup_holder"]
+            color = filter_form.cleaned_data["color"]
+            kajak_type = filter_form.cleaned_data["kajak_type"]
+            price_per_hour = filter_form.cleaned_data["price_per_hour"]
             # filter main kajak queryset by number of seats
-            if number_of_seats is not None: # jesli liczba miejsc zostala podana
-                qs = qs.filter(seats=number_of_seats) # wez kajaki ktore pole seats jest rowne podanej liczbie miejsc
-            if cargo != "None": # jesli opcja cargo zostala podana
-                qs = qs.filter(cargo=cargo) # wybierz kajaki ktore sa cargo
+            qs = filter_non_required_field(qs, field="seats", field_value=number_of_seats)
+            qs = filter_non_required_field(qs, field="price_per_hour", field_value=price_per_hour)
+            
+            qs = filter_choice_field(qs, field="cargo", field_value=cargo)
+            qs = filter_choice_field(qs, field="cup_holder", field_value=cup_holder)
+            qs = filter_choice_field(qs, field="color", field_value=color)
+            qs = filter_choice_field(qs, field="kajak_type", field_value=kajak_type)
+
         context = {self.context_object_name: qs, 'form': filter_form }
         return render(request, self.template_name, context)
+
 
 
 
