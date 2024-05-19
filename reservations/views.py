@@ -2,7 +2,7 @@ from typing import Any
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import ListView, DetailView
 
-from reservations.forms import ConfirmReservationForm
+from reservations.forms import ConfirmReservationForm, ListViewFilterForm
 from reservations.models import Kajak, Klient, Rezerwacja
 
 # Create your views here.
@@ -11,6 +11,7 @@ from reservations.models import Kajak, Klient, Rezerwacja
 class KajakListView(ListView):
     model = Kajak
     template_name = "kajaki_list.html"
+    context_object_name = "object_list"
 
     def get_queryset(self):
         # w query set jesli chcemy isc "dalej" w relacjach to uzywamy __
@@ -19,15 +20,23 @@ class KajakListView(ListView):
         # qs = Kajak.objects.filter(reservations__klient_id=1)
         # wyswietl kajaki ktore nie maja rezerwacji
         qs = Kajak.objects.filter(reservations=None)
-
-        # filter_form = ListViewFilterForm(self.request.POST)
-        # if filter_form.is_valid():
-        #     # filtering logic
-        #     pass
         return qs
+    
+    def post(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        filter_form = ListViewFilterForm(self.request.POST)
+        if filter_form.is_valid():
+            # filtering logic
+            seats = filter_form.cleaned_data["seats"]
+            # filter main kajak queryset by number of seats
+            qs = qs.filter(seats=seats)
+        context = {self.context_object_name: qs, 'form': filter_form }
+        return render(request, self.template_name, context)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        return super().get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
+        data["form"] = ListViewFilterForm()
+        return data
 
 
 class KajakDetailView(DetailView):
