@@ -1,6 +1,9 @@
+from datetime import timedelta
 from enum import Enum
+from math import ceil
 from django.db import models
 from django.forms import ValidationError
+from django.utils import timezone
 
 # Create your models here.
 
@@ -45,14 +48,20 @@ class Rezerwacja(models.Model):
     klient = models.ForeignKey(Klient, on_delete=models.CASCADE)
     kajak = models.ForeignKey(Kajak, on_delete=models.PROTECT, related_name="reservations")
     price = models.DecimalField(max_digits=8, decimal_places=2)
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField(blank=True, null=True)
+
 
     def __str__(self):
         return f"{self.klient.mail}/{self.kajak}"
 
     def save(self, *args, **kwargs):
-        hours = 1
+        hours_to_pay = 100
+        if self.end_date is not None:
+            time_delta: timedelta = self.end_date - self.start_date
+            hours_to_pay = ceil(time_delta.seconds/3600.0) + time_delta.days*24
         #TODO calculate hours from start to end
-        self.price = self.kajak.price_per_hour*hours
+        self.price = self.kajak.price_per_hour*hours_to_pay
         super(Rezerwacja, self).save(*args, **kwargs)
 
 
